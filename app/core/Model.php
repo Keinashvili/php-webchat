@@ -40,6 +40,28 @@ class Model extends Database
         return $result->fetch(PDO::FETCH_ASSOC);
     }
 
+    public static function where($column, $id)
+    {
+        $static = new static();
+        $connect = $static->pdo();
+        $table = $static->table;
+        $sql = "SELECT * FROM $table WHERE $column = $id";
+        $result = $connect->query($sql);
+
+        return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function oneData($column)
+    {
+        $static = new static();
+        $connect = $static->pdo();
+        $table = $static->table;
+        $data = $connect->query("SELECT * FROM $table")->fetchAll();
+        foreach ($data as $datum) {
+            return $datum[$column];
+        }
+    }
+
     public static function create(array $array)
     {
         $columns = '';
@@ -62,7 +84,7 @@ class Model extends Database
         $statement->execute($execute);
     }
 
-    public static function update(int $id, array $array)
+    public static function update($column,int $id, array $array)
     {
         $execute = [];
 
@@ -75,7 +97,7 @@ class Model extends Database
         }
         $len = strlen($sql) - 2;
         $sql = substr($sql, 0, $len);
-        $sql = $sql . " WHERE id=$id ";
+        $sql = $sql . " WHERE $column=$id ";
 
         $statement = $static->pdo()->prepare($sql);
         $statement->execute($execute);

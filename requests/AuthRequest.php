@@ -8,6 +8,11 @@ class AuthRequest extends Request
 {
     public function rules()
     {
-        // TODO: Implement rules() method.
+        return [
+            'fname' => 'required',
+            'lname' => 'required',
+            'email' => 'required|unique:users',
+            'password' => 'required',
+        ];
     }
 }

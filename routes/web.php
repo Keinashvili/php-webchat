@@ -1,7 +1,16 @@
 <?php
 
 use app\core\Router;
+use app\Controllers\HomeController;
 
-Router::get('/', function () {
-    echo "<a href='/register'>Register</a>";
+//Router::get('/', function () {
+//    (new HomeController())->index();
+//});
+//
+//Router::get('/test', function () {
+//    echo "signed IN";
+//});
+
+Router::get('/users', function (){
+    (new HomeController())->index();
 });

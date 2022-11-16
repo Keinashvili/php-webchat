@@ -9,7 +9,7 @@
 <div class="wrapper">
     <section class="form signup">
         <header>Realtime Chat App</header>
-        <form action="#" method="POST" enctype="multipart/form-data" autocomplete="off">
+        <form action="/register" method="POST" enctype="multipart/form-data" autocomplete="off">
             <div class="error-text"></div>
             <div class="name-details">
                 <div class="field input">
@@ -38,7 +38,7 @@
                 <input type="submit" name="submit" value="Continue to Chat">
             </div>
         </form>
-        <div class="link">Already signed up? <a href="login.php">Login now</a></div>
+        <div class="link">Already signed up? <a href="/login">Login now</a></div>
     </section>
 </div>
 
