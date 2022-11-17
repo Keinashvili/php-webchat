@@ -54,8 +54,25 @@ if (!function_exists('error')) {
     }
 }
 
-if (!function_exists('routes')){
-    function routes($routes){
-        include_once __DIR__."/../routes/$routes";
+if (!function_exists('routes')) {
+    function routes($routes)
+    {
+        include_once __DIR__ . "/../routes/$routes";
+    }
+}
+
+if (!function_exists('image')) {
+    function image($request, $directory)
+    {
+        $imgName = $_FILES[$request]['name'];
+        $imgType = $_FILES[$request]['type'];
+        $tmpName = $_FILES[$request]['tmp_name'];
+
+        $extensions = ["image/jpeg", "image/png", "image/jpg"];
+        $newImgName = time() . $imgName;
+        if (in_array($imgType, $extensions)) {
+            move_uploaded_file($tmpName, "$directory/" . $newImgName);
+            return $newImgName;
+        }
     }
 }

@@ -78,9 +78,10 @@ class AuthService
             'lname' => $request->lname,
             'email' => $request->email,
             'password' => $encPass,
-            'img' => '$_FILES[]',
+            'img' => image('image', 'avatars'),
             'status' => "Active now",
         ]);
+
         $_SESSION['unique_id'] = $unique_id;
         echo "success";
     }

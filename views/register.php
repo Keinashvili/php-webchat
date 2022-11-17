@@ -1,8 +1,8 @@
 <?php
-//if (isset($_SESSION['unique_id'])) {
-//    header("location: users.php");
-//}
-//?>
+if (isset($_SESSION['unique_id'])) {
+    header("location: /users");
+}
+?>
 
 <?php include_once "includes/header.php"; ?>
 <body>
