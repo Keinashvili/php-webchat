@@ -8,6 +8,10 @@ use requests\AuthRequest;
 
 class AuthService
 {
+    private string $email;
+    private string $password;
+    private $id;
+
     public function __construct()
     {
         Router::get('/register', function () {
@@ -48,16 +52,31 @@ class AuthService
 
     private function login(AuthRequest $request)
     {
-        $email = User::oneData('email');
-        $password = User::oneData('password');
+        $users = User::all();
 
-        $userPassword = md5($request->password);
-        if ($email == $request->email && $password == $userPassword) {
-            $_SESSION['unique_id'] = User::oneData('unique_id');
-            User::update('unique_id', $_SESSION['unique_id'], [
+        foreach ($users as $user) {
+            if ($request->email == $user->email) {
+                $this->email = $user->email;
+                $this->password = $user->password;
+            }
+        }
+
+        if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
+            $uniqueID = User::whereByColumn('unique_id', 'users', 'email', "$request->email");
+            foreach ($uniqueID as $values) {
+                foreach ($values as $value) {
+                    $this->id = $value;
+                }
+            }
+            $_SESSION['unique_id'] = $this->id;
+            User::update('unique_id', $this->id, [
                 'status' => "Active now"
             ]);
             echo "success";
+        } elseif ($this->email != $request->email) {
+            echo 'email error';
+        } elseif (!password_verify($request->password, $this->password)) {
+            echo 'pass error';
         }
 
     }
@@ -70,7 +89,7 @@ class AuthService
     private function store(AuthRequest $request)
     {
         $request->validateData();
-        $encPass = md5($request->password);
+        $encPass = password_hash($request->password, PASSWORD_DEFAULT);
         $unique_id = rand(time(), 100000000);
         User::create([
             'unique_id' => $unique_id,

@@ -10,7 +10,7 @@ form.onsubmit = (e) => {
 
 inputField.focus();
 inputField.onkeyup = () => {
-    if (inputField.value != "") {
+    if (inputField.value !== "") {
         sendBtn.classList.add("active");
     } else {
         sendBtn.classList.remove("active");
@@ -41,12 +41,11 @@ chatBox.onmouseleave = () => {
 
 setInterval(() => {
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "php/get-chat.php", true);
+    xhr.open("POST", "/getChat", true);
     xhr.onload = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
-                let data = xhr.response;
-                chatBox.innerHTML = data;
+                chatBox.innerHTML = xhr.response;
                 if (!chatBox.classList.contains("active")) {
                     scrollToBottom();
                 }

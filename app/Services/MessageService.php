@@ -3,6 +3,7 @@
 namespace app\Services;
 
 use models\Message;
+use models\User;
 
 class MessageService
 {
@@ -11,7 +12,7 @@ class MessageService
     public $newOutgoing;
     private array $messages;
 
-    public function __construct()
+    public function __construct($img = null)
     {
         $this->messages = Message::orderBY('DESC', 'msg_id', 1);
         foreach ($this->messages as $message) {
@@ -29,32 +30,35 @@ class MessageService
         }
     }
 
-    public function outGoing($uniqueID): void
+    public function getChat(): void
     {
-        $messages = Message::whereByColumn('msg', 'messages', 'outgoing_msg_id', $uniqueID);
-        foreach ($messages as $message) {
-            foreach ($message as $item) {
-                echo "<div class='chat outgoing'>
-                        <div class='details'>
-                        <p>$item</p>
-                        </div>
-                        </div>";
-            }
-        }
-    }
+        $user = User::where('unique_id', $_SESSION['id']);
+        $img = $user['img'];
 
-    public function inComing($id, $img): void
-    {
-        $messages = Message::whereByColumn('msg', 'messages', 'outgoing_msg_id', $id);
-        foreach ($messages as $message) {
-            foreach ($message as $item) {
-                echo "<div class='chat incoming'>
-                        <img src=" . BASE_URI . '/avatars/' . $img . " alt=''>
-                        <div class='details'>
-                        <p>$item</p>
-                        </div>
-                        </div>";
+        $outgoing_id = $_SESSION['unique_id'];
+        $output = "";
+        $sql = "SELECT * FROM messages";
+        $query = Message::query($sql);
+        foreach ($query as $item) {
+            $message = $item['msg'];
+            $out = $item['outgoing_msg_id'];
+            $in = $item['incoming_msg_id'];
+            if ($out == $outgoing_id) {
+                $output = '<div class="chat outgoing">
+                                <div class="details">
+                                    <p>' . $message . '</p>
+                                </div>
+                           </div>';
             }
+            if ($in == $outgoing_id) {
+                $output = '<div class="chat incoming">
+                                <img src="' . BASE_URI . '/avatars/' . $img . '" alt="">
+                                <div class="details">
+                                    <p>' . $message . '</p>
+                                </div>
+                           </div>';
+            }
+            echo $output;
         }
     }
 }

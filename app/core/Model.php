@@ -55,21 +55,12 @@ class Model extends Database
         return self::$childrenArray;
     }
 
-    public static function query($sql): array
+    public static function query($sql)
     {
         $static = new static();
         $connect = $static->pdo();
-        $result = $connect->query($sql);
+        return $connect->query($sql)->fetchAll();
 
-        foreach ($result->fetchAll() as $key => $fetchArray) {
-            $childClass = new static();
-            foreach ($fetchArray as $itemKey => $itemValue) {
-                $childClass->{$itemKey} = $itemValue;
-            }
-            self::$childrenArray[] = $childClass;
-        }
-
-        return self::$childrenArray;
     }
 
     public static function findOrFail($id)
@@ -94,11 +85,15 @@ class Model extends Database
         return $result->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function whereByColumn($column, $table, $row, $value)
+    public static function whereByColumn($column, $table, $row, $value, $order = null)
     {
+        $query = '';
         $static = new static();
         $connect = $static->pdo();
-        $query = $connect->prepare("SELECT $column FROM $table WHERE $row = $value");
+        if ($order != null) {
+            $query = $connect->prepare("SELECT $column FROM $table WHERE $row = '{$value}' ORDER BY $order");
+        }
+        $query = $connect->prepare("SELECT $column FROM $table WHERE $row = '{$value}'");
         $query->execute();
         return $query->fetchAll(PDO::FETCH_NUM);
     }
@@ -108,7 +103,7 @@ class Model extends Database
         $static = new static();
         $connect = $static->pdo();
         $table = $static->table;
-        $data = $connect->query("SELECT * FROM $table")->fetchAll();
+        $data = $connect->query("SELECT $column FROM $table")->fetchAll();
         foreach ($data as $datum) {
             return $datum[$column];
         }

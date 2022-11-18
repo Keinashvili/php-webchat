@@ -2,7 +2,6 @@
 
 namespace app\Controllers;
 
-use models\Message;
 use models\User;
 
 class HomeController
@@ -20,8 +19,8 @@ class HomeController
     {
         if (isset($_SESSION['unique_id'])) {
             $_SESSION['id'] = $id;
-            $messages= Message::orderBY('ASC', 'msg_id');
-            return view('chat.php', compact('messages'));
+            $user = User::where('unique_id', $_SESSION['id']);
+            return view('chat.php', compact('user'));
         }
         return view('chat.php');
     }
