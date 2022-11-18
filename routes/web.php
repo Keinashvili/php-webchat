@@ -3,14 +3,10 @@
 use app\core\Router;
 use app\Controllers\HomeController;
 
-//Router::get('/', function () {
-//    (new HomeController())->index();
-//});
-//
-//Router::get('/test', function () {
-//    echo "signed IN";
-//});
+Router::get('/', function () {
+    (new HomeController())->users();
+});
 
-Router::get('/users', function (){
-    (new HomeController())->index();
+Router::get('/chat/{id}', function ($id) {
+    (new HomeController())->chat($id);
 });

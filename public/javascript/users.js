@@ -1,5 +1,4 @@
-const searchBar = document.querySelector(".search input"),
-    searchIcon = document.querySelector(".search button"),
+const searchBar = document.querySelector(".search input"), searchIcon = document.querySelector(".search button"),
     usersList = document.querySelector(".users-list");
 
 searchIcon.onclick = () => {
@@ -14,7 +13,7 @@ searchIcon.onclick = () => {
 
 searchBar.onkeyup = () => {
     let searchTerm = searchBar.value;
-    if (searchTerm != "") {
+    if (searchTerm !== "") {
         searchBar.classList.add("active");
     } else {
         searchBar.classList.remove("active");
@@ -24,8 +23,7 @@ searchBar.onkeyup = () => {
     xhr.onload = () => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
-                let data = xhr.response;
-                usersList.innerHTML = data;
+                usersList.innerHTML = xhr.response;
             }
         }
     }

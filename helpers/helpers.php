@@ -76,3 +76,10 @@ if (!function_exists('image')) {
         }
     }
 }
+
+if (!function_exists('assets')) {
+    function assets($path): void
+    {
+        echo BASE_URI . "/$path";
+    }
+}

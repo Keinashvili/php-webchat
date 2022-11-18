@@ -2,13 +2,15 @@
 
 namespace app\core;
 
+error_reporting(E_ERROR | E_PARSE);
+
 use app\Database\Database;
 use PDO;
 
 class Model extends Database
 {
-    protected $table;
     private static $childrenArray = [];
+    protected $table;
 
     public static function all(): array
     {
@@ -16,6 +18,47 @@ class Model extends Database
         $connect = $static->pdo();
         $table = $static->table;
         $sql = "SELECT * FROM $table";
+        $result = $connect->query($sql);
+
+        foreach ($result->fetchAll() as $key => $fetchArray) {
+            $childClass = new static();
+            foreach ($fetchArray as $itemKey => $itemValue) {
+                $childClass->{$itemKey} = $itemValue;
+            }
+            self::$childrenArray[] = $childClass;
+        }
+
+        return self::$childrenArray;
+    }
+
+    public static function orderBY($order, $column, $limit = null): array
+    {
+        $static = new static();
+        $connect = $static->pdo();
+        $table = $static->table;
+        $sql = "SELECT * FROM $table 
+         ORDER BY $column $order;";
+        if ($limit != null) {
+            $sql = "SELECT * FROM $table 
+         ORDER BY $column $order LIMIT $limit;";
+        }
+        $result = $connect->query($sql);
+
+        foreach ($result->fetchAll() as $key => $fetchArray) {
+            $childClass = new static();
+            foreach ($fetchArray as $itemKey => $itemValue) {
+                $childClass->{$itemKey} = $itemValue;
+            }
+            self::$childrenArray[] = $childClass;
+        }
+
+        return self::$childrenArray;
+    }
+
+    public static function query($sql): array
+    {
+        $static = new static();
+        $connect = $static->pdo();
         $result = $connect->query($sql);
 
         foreach ($result->fetchAll() as $key => $fetchArray) {
@@ -40,15 +83,24 @@ class Model extends Database
         return $result->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function where($column, $id)
+    public static function where($column, $value)
     {
         $static = new static();
         $connect = $static->pdo();
         $table = $static->table;
-        $sql = "SELECT * FROM $table WHERE $column = $id";
+        $sql = "SELECT * FROM $table WHERE $column = $value";
         $result = $connect->query($sql);
 
         return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public static function whereByColumn($column, $table, $row, $value)
+    {
+        $static = new static();
+        $connect = $static->pdo();
+        $query = $connect->prepare("SELECT $column FROM $table WHERE $row = $value");
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_NUM);
     }
 
     public static function oneData($column)
@@ -84,7 +136,7 @@ class Model extends Database
         $statement->execute($execute);
     }
 
-    public static function update($column,int $id, array $array)
+    public static function update($column, int $id, array $array)
     {
         $execute = [];
 
