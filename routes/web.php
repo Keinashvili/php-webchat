@@ -15,3 +15,7 @@ Router::get('/chat/{id}', function ($id) {
 Router::post('/getChat', function (){
     (new MessageService())->getChat();
 });
+
+Router::post('/sendMessage', function (){
+    (new HomeController())->sendMessage();
+});

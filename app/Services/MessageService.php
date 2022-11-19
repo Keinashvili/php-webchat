@@ -12,7 +12,7 @@ class MessageService
     public $newOutgoing;
     private array $messages;
 
-    public function __construct($img = null)
+    public function __construct()
     {
         $this->messages = Message::orderBY('DESC', 'msg_id', 1);
         foreach ($this->messages as $message) {

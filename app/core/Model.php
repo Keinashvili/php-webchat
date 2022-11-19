@@ -59,7 +59,9 @@ class Model extends Database
     {
         $static = new static();
         $connect = $static->pdo();
-        return $connect->query($sql)->fetchAll();
+        if (str_contains($sql, 'SELECT') || str_contains($sql, 'select')) {
+            return $connect->query($sql)->fetchAll();
+        }
 
     }
 

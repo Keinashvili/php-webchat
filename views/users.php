@@ -1,9 +1,5 @@
 <?php
 /* @var $users */
-if (!isset($_SESSION['unique_id'])) {
-    header("location: /login");
-
-}
 use app\Services\MessageService;
 include_once __DIR__ . "/includes/header.php"; ?>
 <body>
