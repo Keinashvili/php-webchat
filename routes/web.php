@@ -3,6 +3,7 @@
 use app\core\Router;
 use app\Controllers\HomeController;
 use app\Services\MessageService;
+use app\Services\SearchService;
 
 Router::get('/', function () {
     (new HomeController())->users();
@@ -18,4 +19,8 @@ Router::post('/getChat', function (){
 
 Router::post('/sendMessage', function (){
     (new HomeController())->sendMessage();
+});
+
+Router::post('/search', function (){
+    (new SearchService())->search();
 });
