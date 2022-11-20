@@ -82,7 +82,7 @@ class AuthService
             $encPass = password_hash($request->password, PASSWORD_DEFAULT);
             $id = rand(1, 10000);
             User::create([
-                'id' =>$id,
+                'id' => $id,
                 'fname' => $request->fname,
                 'lname' => $request->lname,
                 'email' => $request->email,
