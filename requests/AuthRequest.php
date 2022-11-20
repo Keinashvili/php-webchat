@@ -13,6 +13,7 @@ class AuthRequest extends Request
             'lname' => 'required',
             'email' => 'required|unique:users',
             'password' => 'required',
+            'password_again' => 'required',
         ];
     }
 }

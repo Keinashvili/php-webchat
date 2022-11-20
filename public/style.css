@@ -42,15 +42,10 @@ body {
     margin: 20px 0;
 }
 
-.form form .error-text {
+.error-text {
     color: #721c24;
-    padding: 8px 10px;
     text-align: center;
-    border-radius: 5px;
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
     margin-bottom: 10px;
-    display: none;
 }
 
 .form form .name-details {

@@ -36,23 +36,12 @@ class Model extends Database
         $static = new static();
         $connect = $static->pdo();
         $table = $static->table;
-        $sql = "SELECT * FROM $table 
-         ORDER BY $column $order;";
+        $sql = "SELECT * FROM $table ORDER BY $column $order;";
         if ($limit != null) {
-            $sql = "SELECT * FROM $table 
-         ORDER BY $column $order LIMIT $limit;";
+            $sql = "SELECT * FROM $table ORDER BY $column $order LIMIT $limit;";
         }
-        $result = $connect->query($sql);
+        return $connect->query($sql)->fetchAll();
 
-        foreach ($result->fetchAll() as $key => $fetchArray) {
-            $childClass = new static();
-            foreach ($fetchArray as $itemKey => $itemValue) {
-                $childClass->{$itemKey} = $itemValue;
-            }
-            self::$childrenArray[] = $childClass;
-        }
-
-        return self::$childrenArray;
     }
 
     public static function query($sql)
@@ -62,7 +51,6 @@ class Model extends Database
         if (str_contains($sql, 'SELECT') || str_contains($sql, 'select')) {
             return $connect->query($sql)->fetchAll();
         }
-
     }
 
     public static function findOrFail($id)

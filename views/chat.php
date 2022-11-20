@@ -3,8 +3,7 @@
 
 use app\Services\MessageService;
 
-?>
-<?php include_once "includes/header.php"; ?>
+include_once "includes/header.php"; ?>
 <body>
 <div class="wrapper">
     <section class="chat-area">
@@ -22,7 +21,7 @@ use app\Services\MessageService;
             <?php (new MessageService())->getChat() ?>
         </div>
         <form action="#" class="typing-area">
-            <input type="text" class="incoming_id" name="incoming_id" value="<?= $_SESSION['id']; ?>" hidden>
+            <input type="text" class="incoming_id" name="incoming_id" value="<?= $_SESSION['otherUser']; ?>" hidden>
             <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off">
             <button><i class="fab fa-telegram-plane"></i></button>
         </form>

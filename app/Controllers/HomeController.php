@@ -9,7 +9,7 @@ class HomeController
 {
     private function auth(): void
     {
-        if (!isset($_SESSION['unique_id'])) {
+        if (!isset($_SESSION['loggedInUser'])) {
             header("location: /login");
         }
     }
@@ -24,17 +24,17 @@ class HomeController
     public function chat($id)
     {
         $this->auth();
-        $_SESSION['id'] = (int)$id;
-        $user = User::where('unique_id', $_SESSION['id']);
+        $_SESSION['otherUser'] = (int)$id;
+        $user = User::where('id', $_SESSION['otherUser']);
         return view('chat.php', compact('user'));
     }
 
     public function sendMessage()
     {
         Message::create([
-            'incoming_msg_id' => $_SESSION['id'],
-            'outgoing_msg_id' => $_SESSION['unique_id'],
-            'msg' => $_POST['message'],
+            'incoming' => $_SESSION['otherUser'],
+            'outgoing' => $_SESSION['loggedInUser'],
+            'message' => $_POST['message'],
         ]);
     }
 }

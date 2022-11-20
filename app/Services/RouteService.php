@@ -10,6 +10,7 @@ class RouteService
     public static function run()
     {
         routes('web.php');
+        routes('auth/auth.php');
     }
 
     public static function boot()

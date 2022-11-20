@@ -1,13 +1,16 @@
 <?php
 /* @var $users */
+
 use app\Services\MessageService;
-include_once __DIR__ . "/includes/header.php"; ?>
+
+include_once __DIR__ . "/includes/header.php";
+?>
 <body>
 <div class="wrapper">
     <section class="users">
         <header>
             <?php foreach ($users as $user): ?>
-                <?php if ($user->unique_id == $_SESSION['unique_id']): ?>
+                <?php if ($user->id == $_SESSION['loggedInUser']): ?>
                     <div class="content">
                         <img src="avatars/<?= $user->img; ?>" alt="">
                         <div class="details">
@@ -15,9 +18,10 @@ include_once __DIR__ . "/includes/header.php"; ?>
                             <p><?= $user->status; ?></p>
                         </div>
                     </div>
-                    <a href="/logout/<?= $_SESSION['unique_id']; ?>" class="logout"
+                    <a href="/logout/<?= $_SESSION['loggedInUser']; ?>" class="logout"
                        onclick="event.preventDefault(); document.getElementById('submit-form').submit();">Logout</a>
-                    <form id="submit-form" action="/logout/<?= $_SESSION['unique_id']; ?>" method="POST" class="hidden">
+                    <form id="submit-form" action="/logout/<?= $_SESSION['loggedInUser']; ?>" method="POST"
+                          class="hidden">
                     </form>
                 <?php endif; ?>
             <?php endforeach ?>
@@ -29,19 +33,16 @@ include_once __DIR__ . "/includes/header.php"; ?>
         </div>
         <div class="users-list">
             <?php foreach ($users as $user): ?>
-                <?php if ($user->unique_id != $_SESSION['unique_id']): ?>
-                    <a href="/chat/<?= $user->unique_id ?>">
+                <?php if ($user->id != $_SESSION['loggedInUser']): ?>
+                    <a href="/chat/<?= $user->id ?>">
                         <div class="content">
                             <img src="avatars/<?= $user->img; ?>" alt="">
                             <div class="details">
                                 <span><?= $user->fname . " " . $user->lname; ?></span>
                                 <p><?php
                                     $message = new MessageService();
-                                    if ($user->unique_id != $message->newOutgoing && $user->unique_id != $message->newIncoming) {
-                                        echo "No message available";
-                                    } else {
-                                        echo $message->newMessage;
-                                    }
+                                    $message->getMessage($user->id);
+                                    echo $message->newMessage;
                                     ?>
                                 </p>
                             </div>

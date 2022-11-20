@@ -2,6 +2,7 @@
 
 namespace app\Services;
 
+use app\core\Request;
 use app\core\Router;
 use models\User;
 use requests\AuthRequest;
@@ -12,37 +13,22 @@ class AuthService
     private string $password;
     private $id;
 
-    public function __construct()
+    public function auth()
     {
-        Router::get('/register', function () {
-            $this->create();
-        });
-
-        Router::get('/login', function () {
-            $this->index();
-        });
-
-        Router::post('/login', function () {
-            $this->login(new AuthRequest());
-        });
-
-        Router::post('/register', function () {
-            $this->store(new AuthRequest());
-        });
-
-        Router::post('/logout/{id}', function ($id) {
-            $this->logout($id);
-        });
+        if (isset($_SESSION['loggedInUser'])) {
+            header("location: /");
+        }
     }
 
-    private function index(): void
+    public function index(): void
     {
+        $this->auth();
         view('login.php');
     }
 
-    private function logout($id)
+    public function logout($id)
     {
-        User::update('unique_id', $id, [
+        User::update('id', $id, [
             'status' => 'Offline now'
         ]);
         session_unset();
@@ -50,10 +36,9 @@ class AuthService
         header("location: /login");
     }
 
-    private function login(AuthRequest $request)
+    public function login(Request $request)
     {
         $users = User::all();
-
         foreach ($users as $user) {
             if ($request->email == $user->email) {
                 $this->email = $user->email;
@@ -61,47 +46,60 @@ class AuthService
             }
         }
 
-        if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
-            $uniqueID = User::whereByColumn('unique_id', 'users', 'email', "$request->email");
-            foreach ($uniqueID as $values) {
-                foreach ($values as $value) {
-                    $this->id = $value;
+        if (!empty($request->email) && !empty($request->password)) {
+            if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
+                $id = User::whereByColumn('id', 'users', 'email', "$request->email");
+                foreach ($id as $values) {
+                    foreach ($values as $value) {
+                        $this->id = $value;
+                    }
                 }
+                $_SESSION['loggedInUser'] = $this->id;
+                User::update('id', $this->id, [
+                    'status' => "Active now"
+                ]);
             }
-            $_SESSION['unique_id'] = $this->id;
-            User::update('unique_id', $this->id, [
-                'status' => "Active now"
-            ]);
-            echo "success";
-        } elseif ($this->email != $request->email) {
-            echo 'email error';
-        } elseif (!password_verify($request->password, $this->password)) {
-            echo 'pass error';
         }
+        if (empty($request->email)) {
+            $_SESSION['email'] = 'Email is required!';
+        }
+        if (empty($request->password)) {
+            $_SESSION['password'] = 'Password is required!';
+        }
+        header("Location: /");
 
     }
 
-    private function create(): void
+    public function create(): void
     {
+        $this->auth();
         view('register.php');
     }
 
-    private function store(AuthRequest $request)
+    public function store(AuthRequest $request)
     {
         $request->validateData();
-        $encPass = password_hash($request->password, PASSWORD_DEFAULT);
-        $unique_id = rand(time(), 100000000);
-        User::create([
-            'unique_id' => $unique_id,
-            'fname' => $request->fname,
-            'lname' => $request->lname,
-            'email' => $request->email,
-            'password' => $encPass,
-            'img' => image('image', 'avatars'),
-            'status' => "Active now",
-        ]);
+        if ($request->password == $request->password_again && $request->password != '' && $request->password_again != '') {
+            $encPass = password_hash($request->password, PASSWORD_DEFAULT);
+            User::create([
+                'fname' => $request->fname,
+                'lname' => $request->lname,
+                'email' => $request->email,
+                'password' => $encPass,
+                'img' => image('image', 'avatars'),
+                'status' => "Active now",
+            ]);
 
-        $_SESSION['unique_id'] = $unique_id;
-        echo "success";
+            $id = '';
+            $user = User::orderBY('DESC', 'id', 1);
+            foreach ($user as $data) {
+                $id = $data->id;
+            }
+            $_SESSION['loggedInUser'] = $id;
+            header("Location: /");
+        } else {
+            $_SESSION['password_again'] = "Passwords dont match!";
+            header("Location: /register");
+        }
     }
 }

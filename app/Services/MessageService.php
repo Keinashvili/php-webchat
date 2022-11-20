@@ -7,58 +7,61 @@ use models\User;
 
 class MessageService
 {
-    public string $newMessage;
-    public $newIncoming;
-    public $newOutgoing;
-    private array $messages;
+    public mixed $newMessage;
 
     public function __construct()
     {
-        $this->messages = Message::orderBY('DESC', 'msg_id', 1);
-        foreach ($this->messages as $message) {
-            $this->newOutgoing = $message->outgoing_msg_id;
-            $this->newIncoming = $message->incoming_msg_id;
-            if ($message->msg != '') {
-                if ($message->incoming_msg_id == $_SESSION['unique_id']) {
-                    $this->newMessage = $message->msg;
-                } elseif ($message->outgoing_msg_id == $_SESSION['unique_id']) {
-                    $this->newMessage = "You: $message->msg";
-                } else {
-                    $this->newMessage = "No message available";
-                }
+        $this->newMessage = "No message available";
+    }
+
+    public function getMessage($userId): void
+    {
+        $messages = Message::query("SELECT * FROM messages ORDER BY id ASC");
+        foreach ($messages as $message) {
+            if ($message['incoming'] == $userId && $message['outgoing'] == $_SESSION['loggedInUser']) {
+                $newMessage = $message['message'];
+                $this->newMessage = "You: $newMessage";
+            }
+            if ($message['outgoing'] == $userId && $message['incoming'] == $_SESSION['loggedInUser']) {
+                $this->newMessage = $message['message'];
             }
         }
     }
 
     public function getChat(): void
     {
-        $user = User::where('unique_id', $_SESSION['id']);
+        $user = User::where('id', $_SESSION['otherUser']);
         $img = $user['img'];
 
-        $outgoing_id = $_SESSION['unique_id'];
+        $outgoingID = $_SESSION['loggedInUser'];
+        $incomingID = $_SESSION['otherUser'];
         $output = "";
         $sql = "SELECT * FROM messages";
         $query = Message::query($sql);
+
+        if (empty($query)) {
+            echo '<div class="text">No messages are available. Once you send message they will appear here.</div>';
+        }
         foreach ($query as $item) {
-            $message = $item['msg'];
-            $out = $item['outgoing_msg_id'];
-            $in = $item['incoming_msg_id'];
-            if ($out == $outgoing_id) {
-                $output = '<div class="chat outgoing">
+            $message = $item['message'];
+            $out = $item['outgoing'];
+            $in = $item['incoming'];
+            if ($out == $outgoingID && $incomingID == $in) {
+                $output .= '<div class="chat outgoing">
                                 <div class="details">
                                     <p>' . $message . '</p>
                                 </div>
                            </div>';
             }
-            if ($in == $outgoing_id) {
-                $output = '<div class="chat incoming">
+            if ($in == $outgoingID && $out == $incomingID) {
+                $output .= '<div class="chat incoming">
                                 <img src="' . BASE_URI . '/avatars/' . $img . '" alt="">
                                 <div class="details">
                                     <p>' . $message . '</p>
                                 </div>
                            </div>';
             }
-            echo $output;
         }
+        echo $output;
     }
 }
