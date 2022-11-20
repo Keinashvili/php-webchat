@@ -55,6 +55,6 @@ include_once __DIR__ . "/includes/header.php";
         </div>
     </section>
 </div>
-<script src="javascript/users.js"></script>
+<script src="<?php assets('javascript/users.js'); ?>"></script>
 </body>
 </html>

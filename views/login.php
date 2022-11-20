@@ -1,10 +1,3 @@
-<?php
-
-if (isset($_SESSION['loggedInUser'])) {
-    header("location: /");
-}
-?>
-
 <?php include_once "includes/header.php"; ?>
     <body>
     <div class="wrapper">
@@ -33,10 +26,7 @@ if (isset($_SESSION['loggedInUser'])) {
             <div class="link">Not yet signed up? <a href="/register">Signup now</a></div>
         </section>
     </div>
-
     <script src="javascript/pass-show-hide.js"></script>
-    <!--<script src="javascript/login.js"></script>-->
-
     </body>
     </html>
 <?php session_destroy(); ?>

@@ -22,7 +22,8 @@ include_once "includes/header.php"; ?>
         </div>
         <form action="#" class="typing-area">
             <input type="text" class="incoming_id" name="incoming_id" value="<?= $_SESSION['otherUser']; ?>" hidden>
-            <input type="text" name="message" class="input-field" placeholder="Type a message here..." autocomplete="off">
+            <input type="text" name="message" class="input-field" placeholder="Type a message here..."
+                   autocomplete="off">
             <button><i class="fab fa-telegram-plane"></i></button>
         </form>
     </section>
