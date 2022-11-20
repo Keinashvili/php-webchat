@@ -3,7 +3,6 @@
 namespace app\Services;
 
 use app\core\Request;
-use app\core\Router;
 use models\User;
 use requests\AuthRequest;
 
@@ -81,7 +80,9 @@ class AuthService
         $request->validateData();
         if ($request->password == $request->password_again && $request->password != '' && $request->password_again != '') {
             $encPass = password_hash($request->password, PASSWORD_DEFAULT);
+            $id = rand(1, 10000);
             User::create([
+                'id' =>$id,
                 'fname' => $request->fname,
                 'lname' => $request->lname,
                 'email' => $request->email,
@@ -89,12 +90,6 @@ class AuthService
                 'img' => image('image', 'avatars'),
                 'status' => "Active now",
             ]);
-
-            $id = '';
-            $user = User::orderBY('DESC', 'id', 1);
-            foreach ($user as $data) {
-                $id = $data->id;
-            }
             $_SESSION['loggedInUser'] = $id;
             header("Location: /");
         } else {
