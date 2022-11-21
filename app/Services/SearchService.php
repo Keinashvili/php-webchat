@@ -4,7 +4,6 @@ namespace app\Services;
 
 use models\Message;
 use models\User;
-use app\Services\MessageService;
 
 class SearchService
 {
