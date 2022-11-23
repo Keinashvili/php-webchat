@@ -1,8 +1,8 @@
 <?php
 
 use app\core\Router;
+use app\Services\auth\AuthService;
 use requests\AuthRequest;
-use app\Services\AuthService;
 
 Router::get('/register', function () {
     (new AuthService)->create();

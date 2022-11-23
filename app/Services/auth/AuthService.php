@@ -1,10 +1,11 @@
 <?php
 
-namespace app\Services;
+namespace app\Services\auth;
 
 use app\core\Request;
 use models\User;
 use requests\AuthRequest;
+use traits\auth\Login;
 
 class AuthService
 {
@@ -12,7 +13,9 @@ class AuthService
     private string $password;
     private $id;
 
-    public function auth()
+    use Login;
+
+    public function auth(): void
     {
         if (isset($_SESSION['loggedInUser'])) {
             header("location: /");
@@ -25,7 +28,7 @@ class AuthService
         view('login.php');
     }
 
-    public function logout($id)
+    public function logout($id): void
     {
         User::update('id', $id, [
             'status' => 'Offline now'
@@ -35,36 +38,18 @@ class AuthService
         header("location: /login");
     }
 
-    public function login(Request $request)
+    public function login(Request $request): void
     {
-        $users = User::all();
-        foreach ($users as $user) {
-            if ($request->email == $user->email) {
-                $this->email = $user->email;
-                $this->password = $user->password;
-            }
-        }
-
         if (!empty($request->email) && !empty($request->password)) {
             if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
-                $id = User::whereByColumn('id', 'users', 'email', "$request->email");
-                foreach ($id as $values) {
-                    foreach ($values as $value) {
-                        $this->id = $value;
-                    }
-                }
                 $_SESSION['loggedInUser'] = $this->id;
                 User::update('id', $this->id, [
                     'status' => "Active now"
                 ]);
             }
         }
-        if (empty($request->email)) {
-            $_SESSION['email'] = 'Email is required!';
-        }
-        if (empty($request->password)) {
-            $_SESSION['password'] = 'Password is required!';
-        }
+        $this->users($request);
+        $this->validate($request);
         header("Location: /");
 
     }
@@ -75,10 +60,13 @@ class AuthService
         view('register.php');
     }
 
-    public function store(AuthRequest $request)
+    public function store(AuthRequest $request): void
     {
         $request->validateData();
-        if ($request->password == $request->password_again && $request->password != '' && $request->password_again != '') {
+        if ($request->password != $request->password_again) {
+            $_SESSION['password_again'] = "Passwords dont match!";
+            header("Location: /register");
+        } else {
             $encPass = password_hash($request->password, PASSWORD_DEFAULT);
             $id = rand(1, 10000);
             User::create([
@@ -92,9 +80,6 @@ class AuthService
             ]);
             $_SESSION['loggedInUser'] = $id;
             header("Location: /");
-        } else {
-            $_SESSION['password_again'] = "Passwords dont match!";
-            header("Location: /register");
         }
     }
 }
