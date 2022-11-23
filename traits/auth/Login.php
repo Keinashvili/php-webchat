@@ -4,6 +4,7 @@ namespace traits\auth;
 
 use app\core\Request;
 use models\User;
+use requests\AuthRequest;
 
 trait Login
 {
@@ -16,6 +17,7 @@ trait Login
                 $this->password = $user->password;
             }
         }
+
         $id = User::whereByColumn('id', 'users', 'email', "$request->email");
         foreach ($id as $values) {
             foreach ($values as $value) {
@@ -24,13 +26,17 @@ trait Login
         }
     }
 
-    private function validate(Request $request): void
+    private function loginValidate(Request $request): void
     {
         if (empty($request->email)) {
             $_SESSION['email'] = 'Email is required!';
+            header('Location: /login');
+            exit();
         }
         if (empty($request->password)) {
             $_SESSION['password'] = 'Password is required!';
+            header('Location: /login');
+            exit();
         }
     }
 

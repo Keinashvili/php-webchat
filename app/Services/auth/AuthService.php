@@ -6,6 +6,7 @@ use app\core\Request;
 use models\User;
 use requests\AuthRequest;
 use traits\auth\Login;
+use traits\auth\Register;
 
 class AuthService
 {
@@ -14,18 +15,24 @@ class AuthService
     private $id;
 
     use Login;
+    use Register;
 
-    public function auth(): void
+    private function auth(): void
     {
         if (isset($_SESSION['loggedInUser'])) {
             header("location: /");
         }
     }
 
-    public function index(): void
+    public function __construct()
+    {
+        $this->users(new AuthRequest());
+    }
+
+    public function index(): bool
     {
         $this->auth();
-        view('login.php');
+        return view('login.php');
     }
 
     public function logout($id): void
@@ -40,46 +47,38 @@ class AuthService
 
     public function login(Request $request): void
     {
-        if (!empty($request->email) && !empty($request->password)) {
-            if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
-                $_SESSION['loggedInUser'] = $this->id;
-                User::update('id', $this->id, [
-                    'status' => "Active now"
-                ]);
-            }
+        $this->loginValidate($request);
+        if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
+            $_SESSION['loggedInUser'] = $this->id;
+            User::update('id', $this->id, [
+                'status' => "Active now"
+            ]);
         }
-        $this->users($request);
-        $this->validate($request);
         header("Location: /");
 
     }
 
-    public function create(): void
+    public function create(): bool
     {
         $this->auth();
-        view('register.php');
+        return view('register.php');
     }
 
     public function store(AuthRequest $request): void
     {
         $request->validateData();
-        if ($request->password != $request->password_again) {
-            $_SESSION['password_again'] = "Passwords dont match!";
-            header("Location: /register");
-        } else {
-            $encPass = password_hash($request->password, PASSWORD_DEFAULT);
-            $id = rand(1, 10000);
-            User::create([
-                'id' => $id,
-                'fname' => $request->fname,
-                'lname' => $request->lname,
-                'email' => $request->email,
-                'password' => $encPass,
-                'img' => image('image', 'avatars'),
-                'status' => "Active now",
-            ]);
-            $_SESSION['loggedInUser'] = $id;
-            header("Location: /");
-        }
+        $this->registerValidate($request);
+        $id = rand(1, 10000);
+        User::create([
+            'id' => $id,
+            'fname' => $request->fname,
+            'lname' => $request->lname,
+            'email' => $request->email,
+            'password' => $this->hashPassword($request),
+            'img' => image('image', 'avatars'),
+            'status' => "Active now",
+        ]);
+        $_SESSION['loggedInUser'] = $id;
+        header("Location: /");
     }
 }

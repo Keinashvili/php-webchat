@@ -14,14 +14,14 @@ class HomeController
         }
     }
 
-    public function users()
+    public function users(): bool
     {
         $this->auth();
         $users = User::all();
         return view('users.php', compact('users'));
     }
 
-    public function chat($id)
+    public function chat($id): bool
     {
         $this->auth();
         $_SESSION['otherUser'] = (int)$id;
@@ -29,7 +29,7 @@ class HomeController
         return view('chat.php', compact('user'));
     }
 
-    public function sendMessage()
+    public function sendMessage(): void
     {
         Message::create([
             'incoming' => $_SESSION['otherUser'],
