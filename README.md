@@ -1,10 +1,9 @@
-# Custom-MVC
-This is my version of PHP MVC pattern
+# PHP Realtime chat web application
+This is my version of PHP Realtime web chat application.
+
+It is based on my own MVC pattern which you can also find on my github profile. 
 
 NOTE: This is just for educational purposes and hasn't been tested on production!
-
-I am new to php and tried to do mvc pattern on my own, using composer.
-I know it has lots of bugs but I am fixing it one by one 
 
 ## Project setup
 ### Go to directory and run composer install
