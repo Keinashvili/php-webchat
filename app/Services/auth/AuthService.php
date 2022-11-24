@@ -17,11 +17,6 @@ class AuthService
     use Login;
     use Register;
 
-    public function __construct()
-    {
-        $this->users(new AuthRequest());
-    }
-
     public function index()
     {
         if (!isset($_SESSION['loggedInUser'])) {
@@ -43,6 +38,7 @@ class AuthService
 
     public function login(Request $request): void
     {
+        $this->users(new AuthRequest());
         $this->loginValidate($request);
         if ($this->email == $request->email && $this->password == password_verify($request->password, $this->password)) {
             $_SESSION['loggedInUser'] = $this->id;
