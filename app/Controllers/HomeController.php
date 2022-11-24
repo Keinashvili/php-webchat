@@ -7,26 +7,25 @@ use models\User;
 
 class HomeController
 {
-    private function auth(): void
+    public function users()
     {
-        if (!isset($_SESSION['loggedInUser'])) {
-            header("location: /login");
+        if (isset($_SESSION['loggedInUser'])) {
+            $users = User::all();
+            return view('users.php', compact('users'));
+        } else {
+            redirect('login');
         }
     }
 
-    public function users(): bool
+    public function chat($id)
     {
-        $this->auth();
-        $users = User::all();
-        return view('users.php', compact('users'));
-    }
-
-    public function chat($id): bool
-    {
-        $this->auth();
-        $_SESSION['otherUser'] = (int)$id;
-        $user = User::where('id', $_SESSION['otherUser']);
-        return view('chat.php', compact('user'));
+        if (isset($_SESSION['loggedInUser'])) {
+            $_SESSION['otherUser'] = (int)$id;
+            $user = User::where('id', $_SESSION['otherUser']);
+            return view('chat.php', compact('user'));
+        } else {
+            redirect('/login');
+        }
     }
 
     public function sendMessage(): void

@@ -46,9 +46,6 @@ setInterval(() => {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 chatBox.innerHTML = xhr.response;
-                if (!chatBox.classList.contains("active")) {
-                    scrollToBottom();
-                }
             }
         }
     }

@@ -2,8 +2,6 @@
 
 namespace app\core;
 
-error_reporting(E_ERROR | E_PARSE);
-
 use app\Database\Database;
 use PDO;
 

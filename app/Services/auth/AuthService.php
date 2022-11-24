@@ -17,22 +17,18 @@ class AuthService
     use Login;
     use Register;
 
-    private function auth(): void
-    {
-        if (isset($_SESSION['loggedInUser'])) {
-            header("location: /");
-        }
-    }
-
     public function __construct()
     {
         $this->users(new AuthRequest());
     }
 
-    public function index(): bool
+    public function index()
     {
-        $this->auth();
-        return view('login.php');
+        if (!isset($_SESSION['loggedInUser'])) {
+            return view('login.php');
+        } else {
+            header("location: /");
+        }
     }
 
     public function logout($id): void
@@ -58,10 +54,13 @@ class AuthService
 
     }
 
-    public function create(): bool
+    public function create()
     {
-        $this->auth();
-        return view('register.php');
+        if (!isset($_SESSION['loggedInUser'])) {
+            return view('register.php');
+        } else {
+            header("location: /");
+        }
     }
 
     public function store(AuthRequest $request): void

@@ -83,3 +83,11 @@ if (!function_exists('assets')) {
         echo BASE_URI . "/$path";
     }
 }
+
+if (!function_exists('redirect')) {
+    function redirect($path): void
+    {
+        $link = BASE_URI . "/$path";
+        header("Location: $link");
+    }
+}
