@@ -3,6 +3,8 @@ This is my version of PHP Realtime web chat application.
 
 It is based on my own MVC pattern which you can also find on my github profile. 
 
+P.S. The design isn't mine. I took it from youtube tutorial.
+
 NOTE: This is just for educational purposes and hasn't been tested on production!
 
 ## Project setup
